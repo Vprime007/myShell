@@ -1,38 +1,29 @@
-#ifndef _MY_SHELL_H
-#define _MY_SHELL_H
+#ifndef _MY_SHELL_CFG_H
+#define _MY_SHELL_CFG_H
 
-#include <stdint.h>
+#include <string.h>
 
 /******************************************************************************
 *   Public Definitions
 *******************************************************************************/
-
+#define SHELL_RX_BUFFER_SIZE_BYTES          (256)
+#define SHELL_MAX_ARGS                      (16)
+#define SHELL_PROMPT                        ("myShell->")
 
 /******************************************************************************
 *   Public Macros
 *******************************************************************************/
-typedef SHELL_Ret_t(*CommandFunction_t)(int argc, char *argv[]);
-typedef void(*PrintCharCallback_t)(char c);
+
 
 /******************************************************************************
 *   Public Data Types
 *******************************************************************************/
-typedef struct SHELL_Cmd_s{
-    const char *cmd_name;
-    CommandFunction_t cmd_func;
-    const char *help_comment;
-}SHELL_Cmd_t;
 
-typedef enum SHELL_Ret_e{
-    SHELL_STATUS_ERROR.
-    SHELL_STATUS_OK,
-}SHELL_Ret_t;
 
 /******************************************************************************
 *   Public Variables
 *******************************************************************************/
-extern const SHELL_Cmd_t *const shell_commands;
-extern uint32_t num_shell_commands;
+
 
 /******************************************************************************
 *   Error Check
@@ -42,12 +33,7 @@ extern uint32_t num_shell_commands;
 /******************************************************************************
 *   Public Functions
 *******************************************************************************/
-SHELL_Ret_t SHELL_Init(PrintCharCallback_t print_c);
 
-void SHELL_RecvChar(char c);
 
-SHELL_Ret_t SHELL_PutLine(const char *str);
 
-SHELL_Ret_t SHELL_HelpHandler(uint32_t argc, char *argv[]);
-
-#endif//_MY_SHELL_H
+#endif//_MY_SHELL_CFG_H
