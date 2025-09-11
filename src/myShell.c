@@ -78,15 +78,15 @@ static bool is_shell_init(void){
 }
 
 /***************************************************************************//*!
-*  \brief Send char
+*  \brief Send character.
 *
-*   This function is used to send char to the Shell dedicated UART port.
+*   This function is used to send chararacter to the Shell dedicated UART port.
 *   
 *   Preconditions: None.
 *
 *   Side Effects: None.
 *
-*   \param[in]  c                   Char to send
+*   \param[in]  c                   Character to send.
 *
 *******************************************************************************/
 static void send_char(char c){
@@ -107,7 +107,7 @@ static void send_char(char c){
 *
 *   Side Effects: None.
 *
-*   \param[in]  c                   Char to echo.
+*   \param[in]  c                   Character to echo.
 *
 *******************************************************************************/
 static void send_echo(char c){
@@ -144,23 +144,81 @@ static void send_echo_str(const char *str){
     }
 }
 
+/***************************************************************************//*!
+*  \brief Send shell prompt.
+*
+*   This function is used the send the shell prompt to the dedicated UART port.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*******************************************************************************/
 static void send_prompt(void){
     send_echo_str(SHELL_PROMPT);
 }
 
+/***************************************************************************//*!
+*  \brief Last character.
+*
+*   This function return the last character passed to the shell.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \return     Last character passed to the shell
+*
+*******************************************************************************/
 static char last_char(void){
     return rx_buffer[rx_size-1];
 }
 
+/***************************************************************************//*!
+*  \brief Is rx buffer full.
+*
+*   This function return "TRUE" if the shell rx buffer is full. It will
+*   return "FALSE" otherwise.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \return         (Full -> True / Not full -> False)
+*
+*******************************************************************************/
 static bool is_rx_buffer_full(void){
     return rx_size >= SHELL_RX_BUFFER_SIZE;
 }
 
+/***************************************************************************//*!
+*  \brief Reset rx buffer.
+*
+*   This function reset the rx buffer and fill it with zeros.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*******************************************************************************/
 static void reset_rx_buffer(void){
     memset(rx_buffer, 0, sizeof(rx_buffer));
     rx_size = 0;
 }
 
+/***************************************************************************//*!
+*  \brief Find command.
+*
+*   This function scan for a command inside the commands table and return 
+*   a pointer to it. Return NULL if the command is not found.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  *name       Command name.
+*
+*******************************************************************************/
 static const SHELL_Command_t *find_command(const char *name){
 
     SHELL_FOR_EACH_COMMAND(command){
@@ -172,6 +230,16 @@ static const SHELL_Command_t *find_command(const char *name){
     return NULL;
 }
 
+/***************************************************************************//*!
+*  \brief Process character.
+*
+*   This function process a incoming character.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*******************************************************************************/
 static void process_char(void){
 
     if((last_char() != '\n') && (!is_rx_buffer_full())){
