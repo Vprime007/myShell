@@ -28,7 +28,7 @@
 /******************************************************************************
 *   Private Functions Declaration
 *******************************************************************************/
-static bool shell_booted(void);
+static bool is_shell_init(void);
 
 static void send_char(char c);
 static void send_echo(char c);
@@ -60,19 +60,56 @@ static char rx_buffer[SHELL_RX_BUFFER_SIZE] = {0};
 /******************************************************************************
 *   Private Functions Definitions
 *******************************************************************************/
-static bool shell_booted(void){
+/***************************************************************************//*!
+*  \brief Is shell initialized.
+*
+*   This function return TRUE if the Shell is initialized and ready to use.
+*   It will return FALSE otherwise.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \return     (Init -> true / Not init -> false)
+*
+*******************************************************************************/
+static bool is_shell_init(void){
     return (shell_print_callback != NULL);
 }
 
+/***************************************************************************//*!
+*  \brief Send char
+*
+*   This function is used to send char to the Shell dedicated UART port.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  c                   Char to send
+*
+*******************************************************************************/
 static void send_char(char c){
 
-    if(!shell_booted()){
+    if(!is_shell_init()){
         return;
     }
 
     shell_print_callback(c);
 }
 
+/***************************************************************************//*!
+*  \brief Send echo.
+*
+*   This function is used to send Shell echo to the dedicated UART port.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  c                   Char to echo.
+*
+*******************************************************************************/
 static void send_echo(char c){
 
     if('\n' == c){
@@ -89,6 +126,18 @@ static void send_echo(char c){
     }
 }
 
+/***************************************************************************//*!
+*  \brief Send string echo. 
+*
+*   This function is used to send Shell string echo to the dedicated UART port.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  str                 String to echo.
+*
+*******************************************************************************/
 static void send_echo_str(const char *str){
     for(const char *c=str; *c != '\0'; c++){
         send_echo(*c);
@@ -177,6 +226,22 @@ static void process_char(void){
 /******************************************************************************
 *   Public Functions Definitions
 *******************************************************************************/
+/***************************************************************************//*!
+*  \brief Shell initialization.
+*
+*   This function perform the shell module initialization. The print_callback
+*   parameter contain a pointer to the function that the shell will use to
+*   print out to the UART port.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  print_callback          Callback to print Shell output.
+*
+*   \return     Operation status
+*
+*******************************************************************************/
 SHELL_Ret_t SHELL_Init(SHELL_PrintCallback_t print_callback){
 
     //Check if param is valid
@@ -203,9 +268,24 @@ SHELL_Ret_t SHELL_Init(SHELL_PrintCallback_t print_callback){
     return SHELL_STATUS_OK;
 }
 
+/***************************************************************************//*!
+*  \brief Shell Receive char.
+*
+*   This function is use to pass incoming char data from the 
+*   UART port to the shell.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  c                   Incoming char.
+*
+*   \return     Operation status
+*
+*******************************************************************************/
 SHELL_Ret_t SHELL_RecvChar(char c){
 
-    if(c == '\r' || is_rx_buffer_full() || !shell_booted()){
+    if(c == '\r' || is_rx_buffer_full() || !is_shell_init()){
         return SHELL_STATUS_ERROR;
     }
     send_echo(c);
@@ -221,6 +301,22 @@ SHELL_Ret_t SHELL_RecvChar(char c){
     return SHELL_STATUS_OK;
 }
 
+/***************************************************************************//*!
+*  \brief Shell Help handler.
+*
+*   Shell 'help' function handler use to print out all available commands
+*   with their respective descriptions. 
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  argc                Number of command params.
+*   \param[in]  argv                Pointer to command params values.
+*
+*   \return     Operation status
+*
+*******************************************************************************/
 int32_t SHELL_HelpHandler(int32_t argc, char *argv[]){
 
     SHELL_FOR_EACH_COMMAND(command){
@@ -233,6 +329,19 @@ int32_t SHELL_HelpHandler(int32_t argc, char *argv[]){
     return 0;
 }
 
+/***************************************************************************//*!
+*  \brief Shell Put line
+*
+*   This function is use to write string via the Shell.
+*   It is mostly use to respond to the shell commands.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \param[in]  str             String to send.
+*
+*******************************************************************************/
 void SHELL_PutLine(const char *str){
 
     send_echo_str(str);
