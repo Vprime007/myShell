@@ -317,14 +317,10 @@ SHELL_Ret_t SHELL_Init(SHELL_PrintCallback_t print_callback){
         return SHELL_STATUS_ERROR;
     }
 
-    ESP_LOGI(TAG, "myShell initialization");
-
     //Fetch commands table and number of command
     SHELL_Commands_Context_t table_context = SHELL_CFG_GetCommandTable();
     commands_table = table_context.pTable;
     nb_commands = table_context.nb_command;
-
-    ESP_LOGI(TAG, "Cmd table of %u command(s)", nb_commands);
 
     //register print callback
     shell_print_callback = print_callback;

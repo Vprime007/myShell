@@ -33,6 +33,7 @@
 *   Private Variables
 *******************************************************************************/
 //Add shell commands inside the the shell_cmd_table 
+//The table should minimally contain the 'help' function.
 static SHELL_Command_t shell_cmd_table[] = {
     {"help", SHELL_HelpHandler, "Lists all commands"},
 };
@@ -46,6 +47,19 @@ static uint32_t nb_shell_cmd = ARRAY_SIZE(shell_cmd_table);
 
 /******************************************************************************
 *   Public Functions Definitions
+*******************************************************************************/
+/***************************************************************************//*!
+*  \brief Get Shell commands table.
+*
+*   This function return a structure containing a pointer to the Shell 
+*   commands table and the size of the table.
+*   
+*   Preconditions: None.
+*
+*   Side Effects: None.
+*
+*   \return     Shell command table infos.
+*
 *******************************************************************************/
 SHELL_Commands_Context_t SHELL_CFG_GetCommandTable(void){
 
