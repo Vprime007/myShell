@@ -171,7 +171,13 @@ static void send_prompt(void){
 *
 *******************************************************************************/
 static char last_char(void){
-    return rx_buffer[rx_size-1];
+
+    if(rx_size > 0){
+        return rx_buffer[rx_size-1];
+    }
+    else{
+        return rx_buffer[0];
+    }
 }
 
 /***************************************************************************//*!
@@ -352,14 +358,18 @@ SHELL_Ret_t SHELL_RecvChar(char c){
     if(c == '\r' || is_rx_buffer_full() || !is_shell_init()){
         return SHELL_STATUS_ERROR;
     }
-    send_echo(c);
-
+    
     if(c == '\b'){
-        rx_buffer[--rx_size] = '\0';
+
+        if(rx_buffer > 0){
+            rx_buffer[--rx_size] = '\0';
+            send_echo(c);
+        }
         return SHELL_STATUS_OK;
     }
-    rx_buffer[rx_size++] = c;
 
+    send_echo(c);
+    rx_buffer[rx_size++] = c;
     process_char();
 
     return SHELL_STATUS_OK;
