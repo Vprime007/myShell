@@ -361,7 +361,7 @@ SHELL_Ret_t SHELL_RecvChar(char c){
     
     if(c == '\b'){
 
-        if(rx_buffer > 0){
+        if(rx_size > 0){
             rx_buffer[--rx_size] = '\0';
             send_echo(c);
         }
